@@ -42,16 +42,12 @@ class _MainPageState extends State<MainPage> {
                         children: [
                           CustomButton(
                             label: ' - ',
-                            width: 80,
-                            height: 40,
                             color: Colors.grey.withValues(alpha: 0.3),
                             onPressed: () => setState(() => _angle = (_angle - 15) % 360),
                           ),
                           const SizedBox(width: 15),
                           CustomButton(
                             label: ' + ',
-                            width: 80,
-                            height: 40,
                             color: Colors.grey.withValues(alpha: 0.3),
                             onPressed: () => setState(() => _angle = (_angle + 15) % 360),
                           ),
@@ -60,14 +56,30 @@ class _MainPageState extends State<MainPage> {
                     ],
                   ),
                 ),
+                //ползунки
                 Expanded(
                   flex: 5,
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border(left: BorderSide(color: Colors.white10, width: 1)),
                     ),
-                    child: const Center(
-                      child: Text("Место для ползунков", style: TextStyle(color: Colors.white24)),
+                    child: Center(
+                      child:  Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CustomButton(
+                            label: ' - ',
+                            color: Colors.grey.withValues(alpha: 0.3),
+                            onPressed: () => debugPrint('minus pressed'),
+                          ),
+                          const SizedBox(width: 15),
+                          CustomButton(
+                            label: ' + ',
+                            color: Colors.grey.withValues(alpha: 0.3),
+                            onPressed: () => debugPrint('plus pressed'),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -93,28 +105,50 @@ class _MainPageState extends State<MainPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _group(children: [
-              CustomButton(label: 'ПУСК', width: 100, height: 70, textColor: Colors.green, borderColor: Colors.green, onPressed: () => debugPrint('PUSK pressed')),
+              CustomButton(
+                label: 'ПУСК',
+                color: Colors.greenAccent, 
+                //width: 100, 
+                //height: 50,  
+                onPressed: () => debugPrint('PUSK pressed')
+                ),
               const SizedBox(width: 8),
-              CustomButton(label: 'СТОП', width: 100, height: 70, textColor: Colors.red, borderColor: Colors.red, onPressed: () => debugPrint('STOP pressed')),
+              CustomButton(
+                label: 'СТОП',
+                color: Colors.greenAccent, 
+                //width: 100, 
+                //height: 50,  
+                onPressed: () => debugPrint('STOP pressed')
+                ),
             ]),
             const SizedBox(width: 20),
             _group(children: [
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CustomButton(label: 'ГОТОВНОСТЬ', width: 130, height: 32, color: Colors.blueAccent.withValues(alpha: 0.4), onPressed: () => debugPrint('ГОТОВНОСТЬ pressed')),
+                  CustomButton(
+                    label: 'ГОТОВНОСТЬ',
+                    //width: 130,
+                   // height: 32, 
+                    color: Colors.blueAccent.withValues(alpha: 0.4), 
+                    onPressed: () => debugPrint('ГОТОВНОСТЬ pressed')
+                    ),
                   const SizedBox(height: 6),
-                  CustomButton(label: 'ПРЕДУПР. / КВИТИРОВАНИЕ', width: 130, height: 32, textColor: Colors.yellow, borderColor: Colors.yellow, onPressed: () => debugPrint('ПРЕДУПР. / КВИТИРОВАНИЕ pressed')),
+                  CustomButton(
+                    label: 'ПРЕДУПР. / КВИТИРОВАНИЕ', 
+                    //width: 130, 
+                    //height: 32, 
+                    onPressed: () => debugPrint('ПРЕДУПР. / КВИТИРОВАНИЕ pressed')
+                    ),
                 ],
               ),
             ]),
             const SizedBox(width: 8),
             CustomButton(
-              label: 'АВАРИЯ /\nКВИТИРОВАНИЕ', 
+              label: 'АВАРИЯ /КВИТИРОВАНИЕ', 
               width: 150, 
               height: 70, 
-              color: Colors.red, 
-              textColor: Colors.white, 
+              color: Colors.redAccent, 
               onPressed: () => debugPrint('АВАРИЯ/КВИТИРОВАНИЕ pressed')
             ),
             const SizedBox(width: 8),
@@ -122,14 +156,14 @@ class _MainPageState extends State<MainPage> {
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CustomButton(label: 'ОГРАНИЧЕНИЕ МОЩНОСТИ', width: 130, height: 32, textColor: Colors.yellow, borderColor: Colors.yellow, onPressed: () => debugPrint('ОГРАНИЧЕНИЕ МОЩНОСТИ pressed')),
+                  CustomButton(label: 'ОГРАНИЧЕНИЕ МОЩНОСТИ', width: 130, height: 32,  onPressed: () => debugPrint('ОГРАНИЧЕНИЕ МОЩНОСТИ pressed')),
                   const SizedBox(height: 6),
-                  CustomButton(label: 'БЛОКИРОВКА ЗАЩИТ', width: 130, height: 32, textColor: Colors.yellow, borderColor: Colors.yellow, onPressed: () => debugPrint('БЛОКИРОВКА ЗАЩИТ pressed')),
+                  CustomButton(label: 'БЛОКИРОВКА ЗАЩИТ', width: 130, height: 32,  onPressed: () => debugPrint('БЛОКИРОВКА ЗАЩИТ pressed')),
                 ],
               ),
             ]),
             const SizedBox(width: 20),
-            CustomButton(label: 'МОЩНОСТЬ', width: 100, height: 70, borderColor: Colors.white38, onPressed: () => debugPrint('20 МЛН МОЩИ ТОМУ, КТО ЭТО НАЖАЛ')),
+            CustomButton(label: 'МОЩНОСТЬ', width: 100, height: 70,  onPressed: () => debugPrint('20 МЛН МОЩИ ТОМУ, КТО ЭТО НАЖАЛ')),
           ],
         ),
       ),

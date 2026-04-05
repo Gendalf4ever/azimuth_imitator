@@ -3,14 +3,10 @@ import 'package:flutter/material.dart';
 class CustomButton extends StatefulWidget {
   final String label;
   final Color color;
-  final Color textColor;
   final VoidCallback onPressed;
   final double width;
   final double height;
   final bool isBlocked;
-  final Color borderColor;
-  final double borderWidth;
-  
 
   const CustomButton({
     super.key,
@@ -20,9 +16,6 @@ class CustomButton extends StatefulWidget {
     this.width = 160,
     this.height = 40,
     this.isBlocked = false,
-    this.textColor = Colors.grey,
-    this.borderColor = Colors.blue,
-    this.borderWidth = 2.0,
   });
 
   @override
@@ -62,7 +55,7 @@ class _CustomButtonState extends State<CustomButton> {
           decoration: BoxDecoration(
             color: _background,
             borderRadius: BorderRadius.circular(widget.height / 2),
-            border: Border.all(color: widget.borderColor, width: widget.borderWidth),
+            border: Border.all(color: widget.color, width: 1.5),
           ),
           alignment: Alignment.center,
           child: Text(
@@ -72,7 +65,7 @@ class _CustomButtonState extends State<CustomButton> {
             style: TextStyle(
               fontSize: widget.height * 0.5,
               fontWeight: FontWeight.w600,
-              color: widget.textColor,
+              color: Colors.white,
               letterSpacing: 0.1,
             ),
           ),
