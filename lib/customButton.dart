@@ -58,15 +58,17 @@ class _CustomButtonState extends State<CustomButton> {
             border: Border.all(color: widget.color, width: 1.5),
           ),
           alignment: Alignment.center,
-          child: Text(
-            widget.label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: widget.height * 0.5,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-              letterSpacing: 0.1,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              widget.label,
+              //maxLines: 1,
+              style: TextStyle(
+                fontSize: widget.height * 0.5,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+                letterSpacing: 0.1,
+              ),
             ),
           ),
         ),
