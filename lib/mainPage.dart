@@ -12,11 +12,10 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  double _angle = 234.0; // для азимута
-  double progressBar1Value = 0; // обороты
-  double progressBar2Value = 0; // мощность
-
-  // true - мощность, false - обороты
+  double _targetAngle = 234.0; 
+  double _currentAngleValue = 234.0; 
+  double progressBar1Value = 0;
+  double progressBar2Value = 0;
   bool isPowerControlMode = false;
 
   @override
@@ -28,19 +27,26 @@ class _MainPageState extends State<MainPage> {
           Expanded(
             child: Row(
               children: [
-                // Виджет азимута
                 Expanded(
                   flex: 5,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _buildHeaderLabels(),
+                      _buildHeaderLabels(_currentAngleValue, _targetAngle),
                       AzimuthWidget(
-                        value: _angle,
-                        setPoint: 0.0,
-                        size: 380,
-                        rocketColor: Colors.cyanAccent,
-                      ),
+                      value: _targetAngle,
+                      size: 380,
+                      rocketColor: Colors.cyanAccent,
+                      onChanged: (val) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted) { 
+                        setState(() {
+                        _currentAngleValue = val;
+                        });
+                      }
+                    });
+                  },
+                ),
                       const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -48,44 +54,34 @@ class _MainPageState extends State<MainPage> {
                           CustomButton(
                             label: ' - ',
                             color: Colors.grey.withValues(alpha: 0.3),
-                            onPressed: () =>
-                                setState(() => _angle = (_angle - 15) % 360),
+                            onPressed: () => setState(() => _targetAngle = (_targetAngle - 15) % 360),
                           ),
                           const SizedBox(width: 15),
                           CustomButton(
                             label: ' + ',
                             color: Colors.grey.withValues(alpha: 0.3),
-                            onPressed: () =>
-                                setState(() => _angle = (_angle + 15) % 360),
+                            onPressed: () => setState(() => _targetAngle = (_targetAngle + 15) % 360),
                           ),
                         ],
                       ),
                     ],
                   ),
                 ),
-                // Правая часть с прогресс-барами
+                // Правая часть с барами
                 Expanded(
                   flex: 5,
                   child: Container(
                     decoration: BoxDecoration(
-                      border: Border(
-                          left: BorderSide(color: Colors.white10, width: 1)),
+                      border: Border(left: BorderSide(color: Colors.white10, width: 1)),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Обороты в минуту прогресс бар
                         CustomProgressBar(
-                            minValue: 0,
-                            maxValue: 1500,
-                            maxColorChangeValue: 1250,
-                            onvalColorChangeColor: Colors.red,
-                            currentValue: progressBar1Value,
-                            title: 'Об/мин',
-                            units: 'RPM'),
+                            minValue: 0, maxValue: 1500, maxColorChangeValue: 1250,
+                            onvalColorChangeColor: Colors.red, currentValue: progressBar1Value,
+                            title: 'Об/мин', units: 'RPM'),
                         const SizedBox(height: 10),
-                        
-                        // Кнопки для ОБОРОТОВ (видны, если НЕ режим мощности)
                         if (!isPowerControlMode)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -93,43 +89,23 @@ class _MainPageState extends State<MainPage> {
                               CustomButton(
                                   label: ' - ',
                                   color: Colors.grey.withValues(alpha: 0.3),
-                                  onPressed: () {
-                                    setState(() {
-                                      // Ограничение
-                                      progressBar1Value = (progressBar1Value - 1).clamp(0, 1500);
-                                      debugPrint('RPM value: $progressBar1Value');
-                                    });
-                                  }),
+                                  onPressed: () => setState(() => progressBar1Value = (progressBar1Value - 10).clamp(0, 1500))),
                               const SizedBox(width: 15),
                               CustomButton(
                                   label: ' + ',
                                   color: Colors.grey.withValues(alpha: 0.3),
-                                  onPressed: () {
-                                    setState(() {
-                                      // Ограничение
-                                      progressBar1Value = (progressBar1Value + 1).clamp(0, 1500);
-                                      debugPrint('RPM value: $progressBar1Value');
-                                    });
-                                  }),
+                                  onPressed: () => setState(() => progressBar1Value = (progressBar1Value + 10).clamp(0, 1500))),
                             ],
                           )
                         else
                           const SizedBox(height: 48),
 
                         const SizedBox(height: 40),
-                        
-                        // Мощность прогресс бар
                         CustomProgressBar(
-                            minValue: 0,
-                            maxValue: 120,
-                            maxColorChangeValue: 100,
-                            onvalColorChangeColor: Colors.red,
-                            currentValue: progressBar2Value,
-                            title: 'Мощность',
-                            units: '%'),
+                            minValue: 0, maxValue: 120, maxColorChangeValue: 100,
+                            onvalColorChangeColor: Colors.red, currentValue: progressBar2Value,
+                            title: 'Мощность', units: '%'),
                         const SizedBox(height: 10),
-                        
-                        // Кнопки для мощности
                         if (isPowerControlMode)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -137,28 +113,16 @@ class _MainPageState extends State<MainPage> {
                               CustomButton(
                                   label: ' - ',
                                   color: Colors.grey.withValues(alpha: 0.3),
-                                  onPressed: () {
-                                    setState(() {
-                                      // Ограничение
-                                      progressBar2Value = (progressBar2Value - 1).clamp(0, 120);
-                                      debugPrint('Power value: $progressBar2Value');
-                                    });
-                                  }),
+                                  onPressed: () => setState(() => progressBar2Value = (progressBar2Value - 1).clamp(0, 120))),
                               const SizedBox(width: 15),
                               CustomButton(
                                   label: ' + ',
                                   color: Colors.grey.withValues(alpha: 0.3),
-                                  onPressed: () {
-                                    setState(() {
-                                      // Ограничение
-                                      progressBar2Value = (progressBar2Value + 1).clamp(0, 120);
-                                      debugPrint('Power value: $progressBar2Value');
-                                    });
-                                  }),
+                                  onPressed: () => setState(() => progressBar2Value = (progressBar2Value + 1).clamp(0, 120))),
                             ],
                           )
                         else
-                          const SizedBox(height: 48), // Заглушка
+                          const SizedBox(height: 48),
                       ],
                     ),
                   ),
@@ -185,71 +149,39 @@ class _MainPageState extends State<MainPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _group(children: [
-              CustomButton(
-                  label: 'ПУСК',
-                  color: Colors.greenAccent,
-                  onPressed: () => debugPrint('PUSK pressed')),
+              CustomButton(label: 'ПУСК', color: Colors.greenAccent, onPressed: () {}),
               const SizedBox(width: 8),
-              CustomButton(
-                  label: 'СТОП',
-                  color: Colors.red,
-                  onPressed: () => debugPrint('STOP pressed')),
+              CustomButton(label: 'СТОП', color: Colors.red, onPressed: () {}),
             ]),
             const SizedBox(width: 20),
             _group(children: [
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CustomButton(
-                      label: 'ГОТОВНОСТЬ',
-                      color: Colors.blueAccent.withValues(alpha: 0.4),
-                      onPressed: () => debugPrint('ГОТОВНОСТЬ pressed')),
+                  CustomButton(label: 'ГОТОВНОСТЬ', color: Colors.blueAccent.withValues(alpha: 0.4), onPressed: () {}),
                   const SizedBox(height: 6),
-                  CustomButton(
-                      label: 'ПРЕДУПР. / КВИТИРОВАНИЕ',
-                      onPressed: () =>
-                          debugPrint('ПРЕДУПР. / КВИТИРОВАНИЕ pressed')),
+                  CustomButton(label: 'ПРЕДУПР. / КВИТ.', onPressed: () {}),
                 ],
               ),
             ]),
             const SizedBox(width: 8),
-            CustomButton(
-                label: 'АВАРИЯ /КВИТИРОВАНИЕ',
-                width: 150,
-                height: 70,
-                color: Colors.redAccent,
-                onPressed: () => debugPrint('АВАРИЯ/КВИТИРОВАНИЕ pressed')),
+            CustomButton(label: 'АВАРИЯ / КВИТ.', width: 150, height: 70, color: Colors.redAccent, onPressed: () {}),
             const SizedBox(width: 8),
             _group(children: [
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CustomButton(
-                      label: 'ОГРАНИЧЕНИЕ МОЩНОСТИ',
-                      width: 130,
-                      height: 32,
-                      onPressed: () =>
-                          debugPrint('ОГРАНИЧЕНИЕ МОЩНОСТИ pressed')),
+                  CustomButton(label: 'ОГРАНИЧЕНИЕ', width: 130, height: 32, onPressed: () {}),
                   const SizedBox(height: 6),
-                  CustomButton(
-                      label: 'БЛОКИРОВКА ЗАЩИТ',
-                      width: 130,
-                      height: 32,
-                      onPressed: () => debugPrint('БЛОКИРОВКА ЗАЩИТ pressed')),
+                  CustomButton(label: 'БЛОКИРОВКА', width: 130, height: 32, onPressed: () {}),
                 ],
               ),
             ]),
             const SizedBox(width: 20),
             CustomButton(
                 label: isPowerControlMode ? 'ОБОРОТЫ' : 'МОЩНОСТЬ', 
-                width: 100, 
-                height: 70, 
-                onPressed: () {
-                  setState(() {
-                    isPowerControlMode = !isPowerControlMode;
-                  });
-                  debugPrint('Control mode changed to: ${isPowerControlMode ? "Power" : "RPM"}');
-                }
+                width: 100, height: 70, 
+                onPressed: () => setState(() => isPowerControlMode = !isPowerControlMode)
             ),
           ],
         ),
@@ -257,21 +189,19 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _group({required List<Widget> children}) =>
-      Row(mainAxisSize: MainAxisSize.min, children: children);
+  Widget _group({required List<Widget> children}) => Row(mainAxisSize: MainAxisSize.min, children: children);
 
-  Widget _buildHeaderLabels() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+  // Обновленный метод хедера: принимает текущее и целевое значение
+  Widget _buildHeaderLabels(double current, double target) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text("УГОЛ\n234 DEG",
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-          Text("ЗАДАТЬ\n0 DEG",
-              style:
-                  TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+          Text("УГОЛ\n${current.toInt()} DEG", 
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          Text("ЗАДАТЬ\n${target.toInt()} DEG", 
+              style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold), 
               textAlign: TextAlign.right),
         ],
       ),

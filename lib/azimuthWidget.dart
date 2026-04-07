@@ -7,6 +7,7 @@ class AzimuthWidget extends StatefulWidget {
   final double size;
   final Color rocketColor;
   final String label;
+  final ValueChanged<double>? onChanged; // Добавили колбэк для передачи угла родителю
 
   const AzimuthWidget({
     super.key,
@@ -15,6 +16,7 @@ class AzimuthWidget extends StatefulWidget {
     this.size = 300.0,
     this.rocketColor = Colors.white,
     this.label = 'УГОЛ',
+    this.onChanged,
   });
 
   @override
@@ -34,7 +36,19 @@ class _AzimuthWidgetState extends State<AzimuthWidget> with SingleTickerProvider
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
-    _animation = Tween<double>(begin: _lastAngle, end: _lastAngle).animate(_controller);
+    _setupAnimation();
+  }
+
+  void _setupAnimation() {
+    _animation = Tween<double>(begin: _lastAngle, end: widget.value).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
+    )..addListener(() {
+        setState(() {});
+        // Сообщаем родителю текущее промежуточное значение
+        if (widget.onChanged != null) {
+          widget.onChanged!(_animation.value);
+        }
+      });
   }
 
   @override
@@ -42,9 +56,7 @@ class _AzimuthWidgetState extends State<AzimuthWidget> with SingleTickerProvider
     super.didUpdateWidget(oldWidget);
     if (oldWidget.value != widget.value) {
       _controller.reset();
-      _animation = Tween<double>(begin: _lastAngle, end: widget.value).animate(
-        CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-      )..addListener(() => setState(() {}));
+      _setupAnimation();
       _controller.forward();
       _lastAngle = widget.value;
     }
@@ -58,8 +70,8 @@ class _AzimuthWidgetState extends State<AzimuthWidget> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    // Маппинг для отрисовки (180 вверху)
-    double rotationAngle = math.pi * (_animation.value - 180) / 180.0;
+    double rocketRotation = math.pi * (_animation.value - 180) / 180.0;
+    double targetRotation = math.pi * (widget.value - 180) / 180.0;
 
     return SizedBox(
       width: widget.size,
@@ -71,8 +83,16 @@ class _AzimuthWidgetState extends State<AzimuthWidget> with SingleTickerProvider
           ),
           Positioned.fill(
             child: CustomPaint(
+              painter: _TargetArrowPainter(
+                rotationAngle: targetRotation,
+                size: widget.size,
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: CustomPaint(
               painter: _RotatingRocketPainter(
-                rotationAngle: rotationAngle,
+                rotationAngle: rocketRotation,
                 color: widget.rocketColor,
                 size: widget.size,
               ),
@@ -84,15 +104,18 @@ class _AzimuthWidgetState extends State<AzimuthWidget> with SingleTickerProvider
               children: [
                 Text(
                   '${_animation.value.toInt()}°',
-                  style: TextStyle(color: Colors.white, fontSize: widget.size * 0.12, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: widget.size * 0.12,
+                      fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  '${widget.setPoint.toInt()}°',
+                  '${widget.value.toInt()}°',
                   style: TextStyle(color: Colors.orange, fontSize: widget.size * 0.07),
                 ),
                 if (widget.label.isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.only(top: 4), // ИСПРАВЛЕНО ЗДЕСЬ
+                    padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       widget.label,
                       style: TextStyle(color: Colors.white54, fontSize: widget.size * 0.04),
@@ -107,7 +130,7 @@ class _AzimuthWidgetState extends State<AzimuthWidget> with SingleTickerProvider
   }
 }
 
-// Приватные художники (Painters) вынесены вниз файла для чистоты
+// Рисование шкал и стрелок (без изменений в логике рисования)
 class _StaticDialPainter extends CustomPainter {
   final double size;
   _StaticDialPainter({required this.size});
@@ -117,13 +140,10 @@ class _StaticDialPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
     final stroke = size.width * 0.02;
-
     final paintGood = Paint()..color = Colors.green..style = PaintingStyle.stroke..strokeWidth = stroke;
     final paintBad = Paint()..color = Colors.red..style = PaintingStyle.stroke..strokeWidth = stroke;
-    
-    canvas.drawArc(Rect.fromCircle(center: center, radius: radius - stroke * 2), -math.pi/2, -math.pi, false, paintGood);
-    canvas.drawArc(Rect.fromCircle(center: center, radius: radius - stroke * 2), -math.pi/2, math.pi, false, paintBad);
-
+    canvas.drawArc(Rect.fromCircle(center: center, radius: radius - stroke * 2), -math.pi / 2, -math.pi, false, paintGood);
+    canvas.drawArc(Rect.fromCircle(center: center, radius: radius - stroke * 2), -math.pi / 2, math.pi, false, paintBad);
     for (int i = 0; i < 360; i += 10) {
       final angle = (i - 270) * math.pi / 180;
       bool major = i % 30 == 0;
@@ -138,12 +158,34 @@ class _StaticDialPainter extends CustomPainter {
   @override bool shouldRepaint(covariant CustomPainter old) => false;
 }
 
+class _TargetArrowPainter extends CustomPainter {
+  final double rotationAngle;
+  final double size;
+  _TargetArrowPainter({required this.rotationAngle, required this.size});
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2;
+    canvas.save();
+    canvas.translate(center.dx, center.dy);
+    canvas.rotate(rotationAngle);
+    final paint = Paint()..color = Colors.orange..style = PaintingStyle.fill;
+    final path = Path()
+      ..moveTo(0, -radius)
+      ..lineTo(-size.width * 0.03, -radius + size.width * 0.05)
+      ..lineTo(size.width * 0.03, -radius + size.width * 0.05)
+      ..close();
+    canvas.drawPath(path, paint);
+    canvas.restore();
+  }
+  @override bool shouldRepaint(_TargetArrowPainter old) => old.rotationAngle != rotationAngle;
+}
+
 class _RotatingRocketPainter extends CustomPainter {
   final double rotationAngle;
   final Color color;
   final double size;
   _RotatingRocketPainter({required this.rotationAngle, required this.color, required this.size});
-
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
@@ -151,16 +193,13 @@ class _RotatingRocketPainter extends CustomPainter {
     canvas.translate(center.dx, center.dy);
     canvas.rotate(rotationAngle);
     canvas.translate(-center.dx, -center.dy);
-
     final p = Paint()..color = color..style = PaintingStyle.stroke..strokeWidth = 2.5;
     final rW = size.width * 0.08;
     final rH = size.height * 0.3;
-
     final path = Path()
       ..moveTo(center.dx, center.dy - rH / 2)
       ..quadraticBezierTo(center.dx + rW, center.dy, center.dx, center.dy + rH / 2)
       ..quadraticBezierTo(center.dx - rW, center.dy, center.dx, center.dy - rH / 2);
-    
     canvas.drawPath(path, p);
     canvas.restore();
   }
