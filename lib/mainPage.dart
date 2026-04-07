@@ -1,6 +1,5 @@
 // ignore_for_file: file_names
 import 'package:azimuth_imitator/customProgressBar.dart';
-import 'package:azimuth_imitator/customSlider.dart';
 import 'package:flutter/material.dart';
 import 'azimuthWidget.dart';
 import 'customButton.dart';
@@ -13,9 +12,12 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  double _angle = 234.0; //для азимута
-  double progressBar1Value = 0;
-  double progressBar2Value = 0;
+  double _angle = 234.0; // для азимута
+  double progressBar1Value = 0; // обороты
+  double progressBar2Value = 0; // мощность
+
+  // true - мощность, false - обороты
+  bool isPowerControlMode = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +34,6 @@ class _MainPageState extends State<MainPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // для заголовков (угол и задать)
                       _buildHeaderLabels(),
                       AzimuthWidget(
                         value: _angle,
@@ -83,36 +84,41 @@ class _MainPageState extends State<MainPage> {
                             title: 'Об/мин',
                             units: 'RPM'),
                         const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CustomButton(
-                                label: ' - ',
-                                color: Colors.grey.withValues(alpha: 0.3),
-                                onPressed: () {
-                                  setState(() {
-                                    progressBar1Value--;
-                                    debugPrint(
-                                        'progress bar value: $progressBar1Value');
-                                  });
-                                  debugPrint('minus pressed');
-                                }),
-                            const SizedBox(width: 15),
-                            CustomButton(
-                                label: ' + ',
-                                color: Colors.grey.withValues(alpha: 0.3),
-                                onPressed: () {
-                                  setState(() {
-                                    progressBar1Value++;
-                                    debugPrint(
-                                        'progress bar value: $progressBar1Value');
-                                  });
-                                  debugPrint('plus pressed');
-                                }),
-                          ],
-                        ),
+                        
+                        // Кнопки для ОБОРОТОВ (видны, если НЕ режим мощности)
+                        if (!isPowerControlMode)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CustomButton(
+                                  label: ' - ',
+                                  color: Colors.grey.withValues(alpha: 0.3),
+                                  onPressed: () {
+                                    setState(() {
+                                      // Ограничение
+                                      progressBar1Value = (progressBar1Value - 1).clamp(0, 1500);
+                                      debugPrint('RPM value: $progressBar1Value');
+                                    });
+                                  }),
+                              const SizedBox(width: 15),
+                              CustomButton(
+                                  label: ' + ',
+                                  color: Colors.grey.withValues(alpha: 0.3),
+                                  onPressed: () {
+                                    setState(() {
+                                      // Ограничение
+                                      progressBar1Value = (progressBar1Value + 1).clamp(0, 1500);
+                                      debugPrint('RPM value: $progressBar1Value');
+                                    });
+                                  }),
+                            ],
+                          )
+                        else
+                          const SizedBox(height: 48),
+
                         const SizedBox(height: 40),
-                        // мощность прогресс бар
+                        
+                        // Мощность прогресс бар
                         CustomProgressBar(
                             minValue: 0,
                             maxValue: 120,
@@ -122,34 +128,37 @@ class _MainPageState extends State<MainPage> {
                             title: 'Мощность',
                             units: '%'),
                         const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CustomButton(
-                                label: ' - ',
-                                color: Colors.grey.withValues(alpha: 0.3),
-                                onPressed: () {
-                                  setState(() {
-                                    progressBar2Value--;
-                                    debugPrint(
-                                        'progress bar 2 value: $progressBar2Value');
-                                  });
-                                  debugPrint('minus pressed');
-                                }),
-                            const SizedBox(width: 15),
-                            CustomButton(
-                                label: ' + ',
-                                color: Colors.grey.withValues(alpha: 0.3),
-                                onPressed: () {
-                                  setState(() {
-                                    progressBar2Value++;
-                                    debugPrint(
-                                        'progress bar value: $progressBar2Value');
-                                  });
-                                  debugPrint('plus pressed');
-                                }),
-                          ],
-                        ),
+                        
+                        // Кнопки для мощности
+                        if (isPowerControlMode)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CustomButton(
+                                  label: ' - ',
+                                  color: Colors.grey.withValues(alpha: 0.3),
+                                  onPressed: () {
+                                    setState(() {
+                                      // Ограничение
+                                      progressBar2Value = (progressBar2Value - 1).clamp(0, 120);
+                                      debugPrint('Power value: $progressBar2Value');
+                                    });
+                                  }),
+                              const SizedBox(width: 15),
+                              CustomButton(
+                                  label: ' + ',
+                                  color: Colors.grey.withValues(alpha: 0.3),
+                                  onPressed: () {
+                                    setState(() {
+                                      // Ограничение
+                                      progressBar2Value = (progressBar2Value + 1).clamp(0, 120);
+                                      debugPrint('Power value: $progressBar2Value');
+                                    });
+                                  }),
+                            ],
+                          )
+                        else
+                          const SizedBox(height: 48), // Заглушка
                       ],
                     ),
                   ),
@@ -232,10 +241,16 @@ class _MainPageState extends State<MainPage> {
             ]),
             const SizedBox(width: 20),
             CustomButton(
-                label: 'МОЩНОСТЬ',
-                width: 100,
-                height: 70,
-                onPressed: () => debugPrint('20 МЛН МОЩИ ТОМУ, КТО ЭТО НАЖАЛ')),
+                label: isPowerControlMode ? 'ОБОРОТЫ' : 'МОЩНОСТЬ', 
+                width: 100, 
+                height: 70, 
+                onPressed: () {
+                  setState(() {
+                    isPowerControlMode = !isPowerControlMode;
+                  });
+                  debugPrint('Control mode changed to: ${isPowerControlMode ? "Power" : "RPM"}');
+                }
+            ),
           ],
         ),
       ),
