@@ -86,16 +86,6 @@ class _MainPageState extends State<MainPage> {
                             onvalColorChangeColor: Colors.red, currentValue: progressBar1Value,
                             title: 'Об/мин', units: 'RPM'),
                         const SizedBox(height: 10),
-                        // Исправил работу слайдера
-                        CustomSlider(
-                          min: 0, 
-                          max: 1500, 
-                          onChanged: (value) {
-                            setState(() {
-                              progressBar1Value = value;
-                            });
-                          }
-                        ),
                         if (!isPowerControlMode)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
