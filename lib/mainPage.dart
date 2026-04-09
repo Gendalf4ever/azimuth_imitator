@@ -1,5 +1,6 @@
 // ignore_for_file: file_names
 import 'package:azimuth_imitator/customProgressBar.dart';
+import 'package:azimuth_imitator/customSlider.dart';
 import 'package:flutter/material.dart';
 import 'azimuthWidget.dart';
 import 'customButton.dart';
@@ -12,8 +13,10 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  double _targetAngle = 234.0; 
-  double _currentAngleValue = 234.0; 
+  double _targetAngle = 234.0;    // Куда смотрит оранжевая стрелка (задается кнопками)
+  double _confirmedAngle = 234.0; // Куда летит ракета (фиксируется после ПУСК)
+  double _currentAngleValue = 234.0; // Текущее положение ракеты в анимации
+  
   double progressBar1Value = 0;
   double progressBar2Value = 0;
   bool isPowerControlMode = false;
@@ -34,19 +37,20 @@ class _MainPageState extends State<MainPage> {
                     children: [
                       _buildHeaderLabels(_currentAngleValue, _targetAngle),
                       AzimuthWidget(
-                      value: _targetAngle,
-                      size: 380,
-                      rocketColor: Colors.cyanAccent,
-                      onChanged: (val) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (mounted) { 
-                        setState(() {
-                        _currentAngleValue = val;
-                        });
-                      }
-                    });
-                  },
-                ),
+                        value: _confirmedAngle, // Ракета летит к подтвержденному углу
+                        setPoint: _targetAngle, // Стрелка всегда показывает заданный
+                        size: 380,
+                        rocketColor: Colors.cyanAccent,
+                        onChanged: (val) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (mounted) { 
+                              setState(() {
+                                _currentAngleValue = val;
+                              });
+                            }
+                          });
+                        },
+                      ),
                       const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -82,6 +86,16 @@ class _MainPageState extends State<MainPage> {
                             onvalColorChangeColor: Colors.red, currentValue: progressBar1Value,
                             title: 'Об/мин', units: 'RPM'),
                         const SizedBox(height: 10),
+                        // Исправил работу слайдера
+                        CustomSlider(
+                          min: 0, 
+                          max: 1500, 
+                          onChanged: (value) {
+                            setState(() {
+                              progressBar1Value = value;
+                            });
+                          }
+                        ),
                         if (!isPowerControlMode)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -149,7 +163,16 @@ class _MainPageState extends State<MainPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _group(children: [
-              CustomButton(label: 'ПУСК', color: Colors.greenAccent, onPressed: () {}),
+              CustomButton(
+                label: 'ПУСК', 
+                color: Colors.greenAccent, 
+                onPressed: () {
+                  setState(() {
+                    // Ракета получает команду лететь к стрелке
+                    _confirmedAngle = _targetAngle;
+                  });
+                }
+              ),
               const SizedBox(width: 8),
               CustomButton(label: 'СТОП', color: Colors.red, onPressed: () {}),
             ]),
@@ -191,7 +214,6 @@ class _MainPageState extends State<MainPage> {
 
   Widget _group({required List<Widget> children}) => Row(mainAxisSize: MainAxisSize.min, children: children);
 
-  // Обновленный метод хедера: принимает текущее и целевое значение
   Widget _buildHeaderLabels(double current, double target) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
