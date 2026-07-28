@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../components/colorManager.dart';
 
 class CustomCheckbox extends StatefulWidget {
-  final Color color;
+  final Color? color;
+  final Color? backgroundColor;
   final ValueChanged<bool> onChanged;
   final double size;
   final bool isBlocked;
@@ -9,7 +11,8 @@ class CustomCheckbox extends StatefulWidget {
 
   const CustomCheckbox({
     super.key,
-    this.color = Colors.blue,
+    this.color,
+    this.backgroundColor,
     required this.onChanged,
     this.size = 28,
     this.isBlocked = false,
@@ -25,10 +28,6 @@ class _CustomCheckboxState extends State<CustomCheckbox>
   late bool _checked;
   late AnimationController _controller;
   late Animation<double> _anim;
-
-  Color _darken(Color c) => HSLColor.fromColor(c)
-      .withLightness((HSLColor.fromColor(c).lightness - 0.5).clamp(0.0, 1.0))
-      .toColor();
 
   @override
   void initState() {
@@ -57,6 +56,9 @@ class _CustomCheckboxState extends State<CustomCheckbox>
 
   @override
   Widget build(BuildContext context) {
+    final color = widget.color ?? ColorManager.primary;
+    final backgroundColor =
+        widget.backgroundColor ?? ColorManager.widgetBackground;
     final alpha = widget.isBlocked ? 0.4 : 1.0;
     final radius = widget.size * 0.18;
 
@@ -69,20 +71,14 @@ class _CustomCheckboxState extends State<CustomCheckbox>
           height: widget.size,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radius),
-            color: _darken(widget.color).withValues(alpha: alpha),
-            border: Border.all(
-              color: widget.color.withValues(alpha: alpha),
-              width: 1.5,
-            ),
+            color: backgroundColor,
+            border: Border.all(color: color, width: 1.5),
           ),
           child: _anim.value > 0
               ? Opacity(
                   opacity: _anim.value * alpha,
                   child: CustomPaint(
-                    painter: _CheckPainter(
-                      color: widget.color,
-                      progress: _anim.value,
-                    ),
+                    painter: _CheckPainter(color: color, progress: _anim.value),
                   ),
                 )
               : null,
@@ -131,5 +127,6 @@ class _CheckPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_CheckPainter old) => old.progress != progress;
+  bool shouldRepaint(_CheckPainter old) =>
+      old.progress != progress || old.color != color;
 }

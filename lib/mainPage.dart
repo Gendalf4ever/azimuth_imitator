@@ -1,9 +1,9 @@
 // ignore_for_file: file_names
 import 'package:azimuth_imitator/customProgressBar.dart';
-import 'package:azimuth_imitator/customSlider.dart';
+import 'package:azimuth_imitator/widgets/customButton.dart';
 import 'package:flutter/material.dart';
 import 'azimuthWidget.dart';
-import 'customButton.dart';
+
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -57,13 +57,13 @@ class _MainPageState extends State<MainPage> {
                         children: [
                           CustomButton(
                             label: ' - ',
-                            color: Colors.grey.withValues(alpha: 0.3),
+                           // color: Colors.grey.withValues(alpha: 0.3),
                             onPressed: () => setState(() => _targetAngle = (_targetAngle - 15) % 360),
                           ),
                           const SizedBox(width: 15),
                           CustomButton(
                             label: ' + ',
-                            color: Colors.grey.withValues(alpha: 0.3),
+                            //color: Colors.grey.withValues(alpha: 0.3),
                             onPressed: () => setState(() => _targetAngle = (_targetAngle + 15) % 360),
                           ),
                         ],

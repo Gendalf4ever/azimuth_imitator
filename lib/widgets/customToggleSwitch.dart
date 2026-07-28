@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../components/colorManager.dart';
 
 class CustomToggleSwitch extends StatefulWidget {
   final double height;
@@ -7,8 +8,8 @@ class CustomToggleSwitch extends StatefulWidget {
   final String leftLabel;
   final String rightLabel;
   final bool initialValue;
-  final Color whenLeft;
-  final Color whenRight;
+  final Color? whenLeft;
+  final Color? whenRight;
   final bool isBlocked;
 
   const CustomToggleSwitch({
@@ -19,8 +20,8 @@ class CustomToggleSwitch extends StatefulWidget {
     this.leftLabel = '',
     this.rightLabel = '',
     this.initialValue = false,
-    this.whenLeft = Colors.black,
-    this.whenRight = Colors.blue,
+    this.whenLeft,
+    this.whenRight,
     this.isBlocked = false,
   });
 
@@ -61,6 +62,8 @@ class _ToggleSwitchState extends State<CustomToggleSwitch>
 
   @override
   Widget build(BuildContext context) {
+    final whenLeft = widget.whenLeft ?? ColorManager.primaryBackground;
+    final whenRight = widget.whenRight ?? ColorManager.primary;
     final thumbSize = widget.height - 10;
     final fontSize = widget.height * 0.5;
     final alpha = widget.isBlocked ? 0.4 : 1.0;
@@ -77,12 +80,8 @@ class _ToggleSwitchState extends State<CustomToggleSwitch>
               height: widget.height,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(widget.height / 2),
-                color: Color.lerp(
-                  widget.whenLeft,
-                  widget.whenRight,
-                  _anim.value,
-                ),
-                border: Border.all(color: widget.whenRight, width: 1.5),
+                color: Color.lerp(whenLeft, whenRight, _anim.value),
+                border: Border.all(color: whenRight, width: 1.5),
               ),
               child: Stack(
                 alignment: Alignment.center,
@@ -102,7 +101,7 @@ class _ToggleSwitchState extends State<CustomToggleSwitch>
                         height: thumbSize,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white,
+                          color: ColorManager.text,
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.2),
@@ -132,7 +131,7 @@ class _ToggleSwitchState extends State<CustomToggleSwitch>
         style: TextStyle(
           fontSize: fontSize,
           fontWeight: FontWeight.w600,
-          color: Colors.white,
+          color: ColorManager.text,
           letterSpacing: 0.1,
         ),
       ),

@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
+import '../components/colorManager.dart';
 
-class CustomLamp extends StatefulWidget {
+class CustomLampBool extends StatefulWidget {
   final bool isOn;
-  final Color color1;
-  final Color color2;
+  final Color? colorOff;
+  final Color? colorOn;
   final double size;
 
-  const CustomLamp({
+  const CustomLampBool({
     super.key,
     required this.isOn,
-    this.color1 = Colors.green,
-    this.color2 = Colors.red,
+    this.colorOff,
+    this.colorOn,
     this.size = 30,
   });
 
   @override
-  State<CustomLamp> createState() => _LampWidgetState();
+  State<CustomLampBool> createState() => _CustomLampBoolState();
 }
 
-class _LampWidgetState extends State<CustomLamp> {
+class _CustomLampBoolState extends State<CustomLampBool> {
   @override
   Widget build(BuildContext context) {
-    final Color activeColor = widget.isOn ? widget.color1 : widget.color2;
+    final colorOff = widget.colorOff ?? ColorManager.primaryBackground;
+    final colorOn = widget.colorOn ?? ColorManager.primary;
+    final Color activeColor = widget.isOn ? colorOn : colorOff;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
@@ -43,19 +46,6 @@ class _LampWidgetState extends State<CustomLamp> {
           ],
           stops: const [0.0, 0.55, 1.0],
         ),
-        // Glow effect
-        /*boxShadow: [
-          BoxShadow(
-            color: activeColor.withValues(alpha: 0.6),
-            blurRadius: size * 0.4,
-            spreadRadius: size * 0.05,
-          ),
-          BoxShadow(
-            color: activeColor.withValues(alpha: 0.2),
-            blurRadius: size * 0.8,
-            spreadRadius: size * 0.1,
-          ),
-        ],*/
       ),
     );
   }

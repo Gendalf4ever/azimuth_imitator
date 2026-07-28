@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../components/colorManager.dart';
 
 class _NumericFormatter extends TextInputFormatter {
   @override
@@ -21,7 +22,8 @@ class CustomInputBox extends StatefulWidget {
   final double height;
   final bool isNumeric;
   final ValueChanged<String> onChanged;
-  final Color color;
+  final Color? color;
+  final Color? backgroundColor;
   final String prompt;
   final bool isBlocked;
 
@@ -31,7 +33,8 @@ class CustomInputBox extends StatefulWidget {
     this.height = 40,
     this.isNumeric = false,
     required this.onChanged,
-    this.color = Colors.blue,
+    this.color,
+    this.backgroundColor,
     this.prompt = '',
     this.isBlocked = false,
   });
@@ -43,10 +46,6 @@ class CustomInputBox extends StatefulWidget {
 class _CustomInputState extends State<CustomInputBox> {
   final _controller = TextEditingController();
 
-  Color _darken(Color c) => HSLColor.fromColor(c)
-      .withLightness((HSLColor.fromColor(c).lightness - 0.5).clamp(0.0, 1.0))
-      .toColor();
-
   @override
   void dispose() {
     _controller.dispose();
@@ -55,6 +54,9 @@ class _CustomInputState extends State<CustomInputBox> {
 
   @override
   Widget build(BuildContext context) {
+    final color = widget.color ?? ColorManager.primary;
+    final backgroundColor =
+        widget.backgroundColor ?? ColorManager.widgetBackground;
     final fontSize = widget.height * 0.34;
 
     return Opacity(
@@ -63,9 +65,9 @@ class _CustomInputState extends State<CustomInputBox> {
         width: widget.width,
         height: widget.height,
         decoration: BoxDecoration(
-          color: _darken(widget.color),
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(widget.height / 2),
-          border: Border.all(color: widget.color, width: 1.5),
+          border: Border.all(color: color, width: 1.5),
         ),
         alignment: Alignment.center,
         child: TextField(
@@ -83,7 +85,7 @@ class _CustomInputState extends State<CustomInputBox> {
           style: TextStyle(
             fontSize: fontSize,
             fontWeight: FontWeight.w500,
-            color: Colors.white,
+            color: ColorManager.text,
             height: 1,
           ),
           decoration: InputDecoration(
@@ -91,7 +93,7 @@ class _CustomInputState extends State<CustomInputBox> {
             hintStyle: TextStyle(
               fontSize: fontSize,
               fontWeight: FontWeight.w400,
-              color: widget.color.withValues(alpha: 0.6),
+              color: color,
               height: 1,
             ),
             border: InputBorder.none,
@@ -100,7 +102,7 @@ class _CustomInputState extends State<CustomInputBox> {
             ),
             isCollapsed: true,
           ),
-          cursorColor: widget.color,
+          cursorColor: color,
           cursorHeight: fontSize * 1.2,
         ),
       ),

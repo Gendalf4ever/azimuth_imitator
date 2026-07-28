@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-//import '../structures.dart';
+import '../structures.dart';
+import '../components/colorManager.dart';
 
 class CustomPopupPage extends StatefulWidget {
   final String title;
   final bool showCloseButton;
   final Widget? appbarWidget;
-  final Color backgroundColor;
-  final Color borderColor;
+  final Color? backgroundColor;
+  final Color? borderColor;
   final List<Widget> widgetStack;
 
   const CustomPopupPage({
@@ -14,8 +15,8 @@ class CustomPopupPage extends StatefulWidget {
     required this.title,
     this.showCloseButton = true,
     this.appbarWidget,
-    this.backgroundColor = Colors.black,
-    this.borderColor = Colors.blue,
+    this.backgroundColor,
+    this.borderColor,
     required this.widgetStack,
   });
 
@@ -24,6 +25,10 @@ class CustomPopupPage extends StatefulWidget {
 }
 
 class _CustomPopupPageState extends State<CustomPopupPage> {
+  late final backgroundColor =
+      widget.backgroundColor ?? ColorManager.primaryBackground;
+  late final borderColor = widget.borderColor ?? ColorManager.primary;
+
   @override
   Widget build(BuildContext context) {
     final maxHeight = screenHeight * 0.8;
@@ -38,8 +43,8 @@ class _CustomPopupPageState extends State<CustomPopupPage> {
         child: Container(
           constraints: BoxConstraints(maxHeight: maxHeight),
           decoration: BoxDecoration(
-            color: widget.backgroundColor,
-            border: Border.all(color: widget.borderColor, width: 1.5),
+            color: backgroundColor,
+            border: Border.all(color: borderColor, width: 1.5),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -50,7 +55,7 @@ class _CustomPopupPageState extends State<CustomPopupPage> {
                 height: appBarHeight,
                 decoration: BoxDecoration(
                   border: Border(
-                    bottom: BorderSide(color: widget.borderColor, width: 1.5),
+                    bottom: BorderSide(color: borderColor, width: 1.5),
                   ),
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(16),
@@ -65,7 +70,7 @@ class _CustomPopupPageState extends State<CustomPopupPage> {
                           ? IconButton(
                               icon: Icon(
                                 Icons.close,
-                                color: widget.borderColor,
+                                color: borderColor,
                                 size: fontSize * 2.2,
                               ),
                               onPressed: () => Navigator.of(context).pop(),
@@ -79,8 +84,8 @@ class _CustomPopupPageState extends State<CustomPopupPage> {
                       child: Center(
                         child: Text(
                           widget.title,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: ColorManager.text,
                             fontWeight: FontWeight.bold,
                             fontSize: fontSize * 2,
                           ),

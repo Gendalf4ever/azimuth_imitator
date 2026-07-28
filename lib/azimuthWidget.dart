@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:azimuth_imitator/components/colorManager.dart';
 import 'package:flutter/material.dart';
 
 class AzimuthWidget extends StatefulWidget {
