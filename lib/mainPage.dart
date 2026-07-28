@@ -1,4 +1,5 @@
 // ignore_for_file: file_names
+import 'package:azimuth_imitator/components/colorManager.dart';
 import 'package:azimuth_imitator/customProgressBar.dart';
 import 'package:azimuth_imitator/widgets/customButton.dart';
 import 'package:flutter/material.dart';
@@ -57,13 +58,11 @@ class _MainPageState extends State<MainPage> {
                         children: [
                           CustomButton(
                             label: ' - ',
-                           // color: Colors.grey.withValues(alpha: 0.3),
                             onPressed: () => setState(() => _targetAngle = (_targetAngle - 15) % 360),
                           ),
                           const SizedBox(width: 15),
                           CustomButton(
                             label: ' + ',
-                            //color: Colors.grey.withValues(alpha: 0.3),
                             onPressed: () => setState(() => _targetAngle = (_targetAngle + 15) % 360),
                           ),
                         ],
@@ -92,12 +91,10 @@ class _MainPageState extends State<MainPage> {
                             children: [
                               CustomButton(
                                   label: ' - ',
-                                  color: Colors.grey.withValues(alpha: 0.3),
                                   onPressed: () => setState(() => progressBar1Value = (progressBar1Value - 10).clamp(0, 1500))),
                               const SizedBox(width: 15),
                               CustomButton(
                                   label: ' + ',
-                                  color: Colors.grey.withValues(alpha: 0.3),
                                   onPressed: () => setState(() => progressBar1Value = (progressBar1Value + 10).clamp(0, 1500))),
                             ],
                           )
@@ -116,12 +113,10 @@ class _MainPageState extends State<MainPage> {
                             children: [
                               CustomButton(
                                   label: ' - ',
-                                  color: Colors.grey.withValues(alpha: 0.3),
                                   onPressed: () => setState(() => progressBar2Value = (progressBar2Value - 1).clamp(0, 120))),
                               const SizedBox(width: 15),
                               CustomButton(
                                   label: ' + ',
-                                  color: Colors.grey.withValues(alpha: 0.3),
                                   onPressed: () => setState(() => progressBar2Value = (progressBar2Value + 1).clamp(0, 120))),
                             ],
                           )
@@ -143,9 +138,8 @@ class _MainPageState extends State<MainPage> {
   Widget _buildBottomControlPanel() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-      decoration: const BoxDecoration(
-        color: Color(0xFF0A0A0A),
-        border: Border(top: BorderSide(color: Colors.white10)),
+      decoration:  BoxDecoration(
+        color: ColorManager.primaryBackground,
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -155,7 +149,6 @@ class _MainPageState extends State<MainPage> {
             _group(children: [
               CustomButton(
                 label: 'ПУСК', 
-                color: Colors.greenAccent, 
                 onPressed: () {
                   setState(() {
                     // Ракета получает команду лететь к стрелке
@@ -164,21 +157,21 @@ class _MainPageState extends State<MainPage> {
                 }
               ),
               const SizedBox(width: 8),
-              CustomButton(label: 'СТОП', color: Colors.red, onPressed: () {}),
+              CustomButton(label: 'СТОП', onPressed: () {}),
             ]),
             const SizedBox(width: 20),
             _group(children: [
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CustomButton(label: 'ГОТОВНОСТЬ', color: Colors.blueAccent.withValues(alpha: 0.4), onPressed: () {}),
+                  CustomButton(label: 'ГОТОВНОСТЬ', onPressed: () {}),
                   const SizedBox(height: 6),
                   CustomButton(label: 'ПРЕДУПР. / КВИТ.', onPressed: () {}),
                 ],
               ),
             ]),
             const SizedBox(width: 8),
-            CustomButton(label: 'АВАРИЯ / КВИТ.', width: 150, height: 70, color: Colors.redAccent, onPressed: () {}),
+            CustomButton(label: 'АВАРИЯ / КВИТ.',  onPressed: () {}),
             const SizedBox(width: 8),
             _group(children: [
               Column(
@@ -211,9 +204,9 @@ class _MainPageState extends State<MainPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text("УГОЛ\n${current.toInt()} DEG", 
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              style:  TextStyle(color: ColorManager.text, fontWeight: FontWeight.bold)),
           Text("ЗАДАТЬ\n${target.toInt()} DEG", 
-              style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold), 
+              style:  TextStyle(color: ColorManager.text, fontWeight: FontWeight.bold), 
               textAlign: TextAlign.right),
         ],
       ),

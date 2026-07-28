@@ -124,33 +124,69 @@ class _TargetArrowPainter extends CustomPainter {
   @override bool shouldRepaint(_TargetArrowPainter old) => old.rotationAngle != rotationAngle;
 }
 
-// Остальные художники (_StaticDialPainter и _RotatingRocketPainter) без изменений...
+
 class _StaticDialPainter extends CustomPainter {
   final double size;
   _StaticDialPainter({required this.size});
+
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
     final stroke = size.width * 0.02;
+    
     final paintGood = Paint()..color = Colors.green..style = PaintingStyle.stroke..strokeWidth = stroke;
     final paintBad = Paint()..color = Colors.red..style = PaintingStyle.stroke..strokeWidth = stroke;
-    canvas.drawArc(Rect.fromCircle(center: center, radius: radius - stroke * 2), -math.pi / 2, -math.pi, false, paintGood);
-    canvas.drawArc(Rect.fromCircle(center: center, radius: radius - stroke * 2), -math.pi / 2, math.pi, false, paintBad);
+
+    // Радиус самой шкалы (возвращаем ближе к краю)
+    final arcRadius = radius - stroke * 2.5;
+    canvas.drawArc(Rect.fromCircle(center: center, radius: arcRadius), -math.pi / 2, -math.pi, false, paintGood);
+    canvas.drawArc(Rect.fromCircle(center: center, radius: arcRadius), -math.pi / 2, math.pi, false, paintBad);
+
     for (int i = 0; i < 360; i += 10) {
       final angle = (i - 270) * math.pi / 180;
       bool major = i % 30 == 0;
-      double len = major ? size.width * 0.05 : size.width * 0.025;
+      double len = major ? size.width * 0.04 : size.width * 0.02;
+      
+      // Рисуем штрихи шкалы наружу
       canvas.drawLine(
-        Offset(center.dx + radius * math.cos(angle), center.dy + radius * math.sin(angle)),
-        Offset(center.dx + (radius - len) * math.cos(angle), center.dy + (radius - len) * math.sin(angle)),
-        Paint()..color = Colors.white38..strokeWidth = 1.5,
+        Offset(center.dx + arcRadius * math.cos(angle), center.dy + arcRadius * math.sin(angle)),
+        Offset(center.dx + (arcRadius + len) * math.cos(angle), center.dy + (arcRadius + len) * math.sin(angle)),
+        Paint()..color = Colors.white54..strokeWidth = 1.5,
       );
+
+      // Рисуем цифровые подписи НАВЕРХУ (за пределами шкалы)
+      if (major) {
+        int displayDegree = i > 180 ? i - 360 : i;
+        if (displayDegree == -180) displayDegree = 180;
+
+        final textSpan = TextSpan(
+          text: '$displayDegree',
+          style: TextStyle(
+            color: ColorManager.primary,
+            fontSize: size.width * 0.038,
+            fontWeight: FontWeight.w500,
+          ),
+        );
+        
+        final textPainter = TextPainter(
+          text: textSpan,
+          textDirection: TextDirection.ltr,
+        );
+        textPainter.layout();
+
+        double textRadius = arcRadius + size.width * 0.11;
+        double x = center.dx + textRadius * math.cos(angle) - textPainter.width / 2;
+        double y = center.dy + textRadius * math.sin(angle) - textPainter.height / 2;
+
+        textPainter.paint(canvas, Offset(x, y));
+      }
     }
   }
-  @override bool shouldRepaint(covariant CustomPainter old) => false;
-}
 
+  @override
+  bool shouldRepaint(covariant CustomPainter old) => false;
+}
 class _RotatingRocketPainter extends CustomPainter {
   final double rotationAngle;
   final Color color;
