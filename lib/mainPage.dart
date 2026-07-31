@@ -1,10 +1,10 @@
 // ignore_for_file: file_names
+import 'dart:async';
 import 'package:azimuth_imitator/components/colorManager.dart';
 import 'package:azimuth_imitator/customProgressBar.dart';
 import 'package:azimuth_imitator/widgets/customButton.dart';
 import 'package:flutter/material.dart';
 import 'azimuthWidget.dart';
-
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -14,18 +14,47 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  double _targetAngle = 234.0;    // Куда смотрит оранжевая стрелка (задается кнопками)
-  double _confirmedAngle = 234.0; // Куда летит ракета (фиксируется после ПУСК)
-  double _currentAngleValue = 234.0; // Текущее положение ракеты в анимации
+  double _targetAngle = 0.0;       
+  double _confirmedAngle = 0.0;    
+  double _currentAngleValue = 0.0; 
   
+  bool _isStarted = false;         
+  Timer? _movementTimer;          
+
+  final GlobalKey<State<AzimuthWidget>> _azimuthKey = GlobalKey<State<AzimuthWidget>>();
+
   double progressBar1Value = 0;
   double progressBar2Value = 0;
   bool isPowerControlMode = false;
 
+  void _changeTargetAngle(double newTarget) {
+    if (!_isStarted) return; 
+
+    setState(() {
+      _targetAngle = newTarget; 
+    });
+
+    _movementTimer?.cancel();
+
+    _movementTimer = Timer(const Duration(seconds: 2), () {
+      if (mounted && _isStarted) {
+        setState(() {
+          _confirmedAngle = _targetAngle;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _movementTimer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: ColorManager.primaryBackground,
       body: Column(
         children: [
           Expanded(
@@ -38,10 +67,10 @@ class _MainPageState extends State<MainPage> {
                     children: [
                       _buildHeaderLabels(_currentAngleValue, _targetAngle),
                       AzimuthWidget(
-                        value: _confirmedAngle, // Ракета летит к подтвержденному углу
-                        setPoint: _targetAngle, // Стрелка всегда показывает заданный
+                        key: _azimuthKey,
+                        value: _confirmedAngle, 
+                        setPoint: _targetAngle, 
                         size: 380,
-                        rocketColor: Colors.cyanAccent,
                         onChanged: (val) {
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             if (mounted) { 
@@ -58,12 +87,16 @@ class _MainPageState extends State<MainPage> {
                         children: [
                           CustomButton(
                             label: ' - ',
-                            onPressed: () => setState(() => _targetAngle = (_targetAngle - 15) % 360),
+                            onPressed: _isStarted 
+                              ? () => _changeTargetAngle((_targetAngle - 15) % 360) 
+                              : () {},
                           ),
                           const SizedBox(width: 15),
                           CustomButton(
                             label: ' + ',
-                            onPressed: () => setState(() => _targetAngle = (_targetAngle + 15) % 360),
+                            onPressed: _isStarted 
+                              ? () => _changeTargetAngle((_targetAngle + 15) % 360) 
+                              : () {},
                           ),
                         ],
                       ),
@@ -74,7 +107,7 @@ class _MainPageState extends State<MainPage> {
                 Expanded(
                   flex: 5,
                   child: Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       border: Border(left: BorderSide(color: Colors.white10, width: 1)),
                     ),
                     child: Column(
@@ -138,7 +171,7 @@ class _MainPageState extends State<MainPage> {
   Widget _buildBottomControlPanel() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-      decoration:  BoxDecoration(
+      decoration: BoxDecoration(
         color: ColorManager.primaryBackground,
       ),
       child: SingleChildScrollView(
@@ -151,13 +184,49 @@ class _MainPageState extends State<MainPage> {
                 label: 'ПУСК', 
                 onPressed: () {
                   setState(() {
-                    // Ракета получает команду лететь к стрелке
-                    _confirmedAngle = _targetAngle;
+                    _isStarted = true; 
                   });
+                      ScaffoldMessenger.of(context).clearSnackBars();
+                     ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: const Text(
+                    'Система активна',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  backgroundColor: Colors.green.shade700,
+                      duration: const Duration(seconds: 2),
+                      behavior: SnackBarBehavior.floating,
+                  )
+                );
                 }
+             
               ),
               const SizedBox(width: 8),
-              CustomButton(label: 'СТОП', onPressed: () {}),
+              CustomButton(
+                label: 'СТОП', 
+                onPressed: () {
+                  _movementTimer?.cancel();
+                  final currentState = _azimuthKey.currentState;
+                  if (currentState != null) {
+                    (currentState as dynamic).stopAnimation();
+                  }
+                  
+                  setState(() {
+                    _isStarted = false; 
+                    _confirmedAngle = _currentAngleValue;
+                  });
+                   ScaffoldMessenger.of(context).clearSnackBars();
+                     ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: const Text(
+                    'Система неактивна',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  backgroundColor: Colors.red.shade700,
+                      duration: const Duration(seconds: 2),
+                      behavior: SnackBarBehavior.floating,
+                  )
+                );
+                }
+              ),
             ]),
             const SizedBox(width: 20),
             _group(children: [
@@ -204,9 +273,9 @@ class _MainPageState extends State<MainPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text("УГОЛ\n${current.toInt()} DEG", 
-              style:  TextStyle(color: ColorManager.text, fontWeight: FontWeight.bold)),
+              style: TextStyle(color: ColorManager.text, fontWeight: FontWeight.bold)),
           Text("ЗАДАТЬ\n${target.toInt()} DEG", 
-              style:  TextStyle(color: ColorManager.text, fontWeight: FontWeight.bold), 
+              style: TextStyle(color: ColorManager.text, fontWeight: FontWeight.bold), 
               textAlign: TextAlign.right),
         ],
       ),

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:intl/intl.dart';
-import 'package:template_proj/components/colorManager.dart';
-import 'package:template_proj/widgets/customDropdownMenu.dart';
-import 'package:template_proj/widgets/customTable.dart';
+import '/components/colorManager.dart';
+import '/widgets/customDropdownMenu.dart';
+import '/widgets/customTable.dart';
 import '../dataProvider.dart';
 
 class CMsgsPage extends StatefulWidget {
@@ -81,7 +81,7 @@ class _CMsgsPageState extends State<CMsgsPage> {
     }).toList();
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: ColorManager.primaryBackground,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
