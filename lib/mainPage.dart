@@ -18,7 +18,8 @@ class _MainPageState extends State<MainPage> {
   double _confirmedAngle = 0.0;    
   double _currentAngleValue = 0.0; 
   
-  bool _isStarted = false;         
+  bool _isStarted = false;     
+  bool _isBlocked = true;    
   Timer? _movementTimer;          
 
   final GlobalKey<State<AzimuthWidget>> _azimuthKey = GlobalKey<State<AzimuthWidget>>();
@@ -87,13 +88,15 @@ class _MainPageState extends State<MainPage> {
                         children: [
                           CustomButton(
                             label: ' - ',
+                            isBlocked: _isBlocked,
                             onPressed: _isStarted 
-                              ? () => _changeTargetAngle((_targetAngle - 15) % 360) 
+                              ? () => _changeTargetAngle((_targetAngle - 15) % 360)  
                               : () {},
                           ),
                           const SizedBox(width: 15),
                           CustomButton(
                             label: ' + ',
+                            isBlocked: _isBlocked,
                             onPressed: _isStarted 
                               ? () => _changeTargetAngle((_targetAngle + 15) % 360) 
                               : () {},
@@ -185,6 +188,7 @@ class _MainPageState extends State<MainPage> {
                 onPressed: () {
                   setState(() {
                     _isStarted = true; 
+                    _isBlocked = false;
                   });
                       ScaffoldMessenger.of(context).clearSnackBars();
                      ScaffoldMessenger.of(context).showSnackBar(
@@ -212,6 +216,7 @@ class _MainPageState extends State<MainPage> {
                   
                   setState(() {
                     _isStarted = false; 
+                    _isBlocked = true;
                     _confirmedAngle = _currentAngleValue;
                   });
                    ScaffoldMessenger.of(context).clearSnackBars();
