@@ -1,3 +1,4 @@
+import 'package:azimuth_imitator/pages/apsPage.dart';
 import 'package:flutter/material.dart';
 import '/components/colorManager.dart';
 import '/components/mainTabBar.dart'; 
@@ -18,7 +19,7 @@ class _MainscreenState extends State<Mainscreen> with SingleTickerProviderStateM
 //pages list
   late final List<({String label, Widget page})> _tabs = [
     (label: 'Главная', page: const MainPage()),
-    (label: 'АПС', page:  Center(child: Text('Страница АПС', style: TextStyle(color: ColorManager.text)))),
+    (label: 'АПС', page:  Apspage()),
     (label: 'Схема', page:  Center(child: Text('Страница Схема', style: TextStyle(color: ColorManager.text)))),
     (label: 'Сообщения', page: Center(child: Text('Страница Сообщения', style: TextStyle(color: ColorManager.text))))
   ];
