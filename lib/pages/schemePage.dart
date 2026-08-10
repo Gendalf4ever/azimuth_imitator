@@ -1,7 +1,8 @@
+// ignore_for_file: file_names
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import '../components/colorManager.dart';
 import '../widgets/diagramPainter.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class SchemePage extends StatefulWidget {
   const SchemePage({super.key});
@@ -57,17 +58,30 @@ class _SchemePageState extends State<SchemePage> {
                     top: (bus['top'] as num).toDouble() * s,
                     left: (bus['left'] as num).toDouble() * s,
                     child: Container(
-                      padding: EdgeInsets.only(top: 5 * s, left: 25 * s),
-                      child: Text(
-                        bus['title'],
-                        style: TextStyle(
-                          fontSize: 26 * s,
-                          color: ColorManager.text,
-                          fontWeight: FontWeight.bold,
+                        width: (bus['width'] as num).toDouble() * s,
+                        height: (bus['height'] as num).toDouble() * s,
+                        decoration: BoxDecoration(
+                          color: ColorManager.secondaryBackground,
+                          border: Border.all(
+                            color: ColorManager.primary,
+                          width: 1 * s,
+                          ),
+                            borderRadius: BorderRadius.circular(4 * s),
+                        ), 
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 5 * s, left: 15 * s),
+                          child: Text(
+                              bus['title'],
+                              style: TextStyle(
+                                fontSize: 20 * s,
+                                color: ColorManager.text,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  )),
                   //scheme lines
                   Positioned.fill(
                     child: IgnorePointer(
@@ -77,8 +91,9 @@ class _SchemePageState extends State<SchemePage> {
                         ),
                       )
                     ),
-                    _buildGDG('2', 350 * s, 250 * s),
-                    _buildGDG('1', 1200 * s, 250 * s),
+                    _buildGDG('ГДГ 2', 350 * s, 250 * s),
+                    _buildGDG('ГДГ 1', 1200 * s, 250 * s),
+                    _buildGDG('АСДГ ', 1155 * s, 1050 * s),
 
                     ..._boxes.map((box) => Positioned(
                       top: (box[2] as num).toDouble() * s,
@@ -134,7 +149,7 @@ class _SchemePageState extends State<SchemePage> {
             ),
             child: Center(
               child: Text(
-                'Г$number',
+                number,
                 style: TextStyle(
                   color: ColorManager.text,
                   fontSize: 16 * s,
@@ -163,13 +178,14 @@ class _SchemePageState extends State<SchemePage> {
                 border: Border.all(color: ColorManager.primary, width: 2 * s),
               ),
               child: Center(
-                child: Center(
-                  child: Text(name, style: TextStyle(
-                    color: ColorManager.text,
-                    fontSize: 24 * s,
-                    fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                child: SvgPicture.asset(
+                  'imgs/2circles.svg',
+                  width: 36 * s,
+                  height: 72 * s,
+                  colorFilter: ColorFilter.mode(
+                  ColorManager.text, // Перекрашивает иконку под цвет текста темы, если нужно
+                  BlendMode.srcIn,
+                ),
                 ),
               ),
             ),

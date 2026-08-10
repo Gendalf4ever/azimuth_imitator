@@ -4,7 +4,7 @@ import 'package:azimuth_imitator/components/colorManager.dart';
 import 'package:azimuth_imitator/customProgressBar.dart';
 import 'package:azimuth_imitator/widgets/customButton.dart';
 import 'package:flutter/material.dart';
-import 'azimuthWidget.dart';
+import '../azimuthWidget.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});

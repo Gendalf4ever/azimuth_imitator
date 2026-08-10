@@ -1,10 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:azimuth_imitator/pages/apsPage.dart';
 import 'package:azimuth_imitator/pages/schemePage.dart';
-import 'package:flutter/material.dart';
-import '/components/colorManager.dart';
-import '/components/mainTabBar.dart'; 
-import '/components/mainAppBar.dart'; 
-import '/mainPage.dart';
+import 'package:azimuth_imitator/pages/mainPage.dart';
+import 'package:azimuth_imitator/components/colorManager.dart';
+import 'package:azimuth_imitator/components/mainTabBar.dart';
+import 'package:azimuth_imitator/components/mainAppBar.dart';
 
 class Mainscreen extends StatefulWidget {
   const Mainscreen({super.key});
@@ -19,7 +19,7 @@ class _MainscreenState extends State<Mainscreen> with SingleTickerProviderStateM
 
 //pages list
   late final List<({String label, Widget page})> _tabs = [
-    (label: 'Главная', page: const MainPage()),
+    (label: 'Главная', page: MainPage()),
     (label: 'АПС', page:  Apspage()),
     (label: 'Схема', page:  SchemePage()),
     (label: 'Сообщения', page: Center(child: Text('Страница Сообщения', style: TextStyle(color: ColorManager.text))))
