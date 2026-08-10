@@ -1,9 +1,14 @@
 // ignore_for_file: file_names
+import 'package:azimuth_imitator/customProgressBar.dart';
+import 'package:azimuth_imitator/diagram_widgets/CircleIndicator.dart';
 import 'package:azimuth_imitator/diagram_widgets/CircuitBreakerIndicator.dart';
 import 'package:azimuth_imitator/diagram_widgets/RectIndicator.dart';
 import 'package:azimuth_imitator/diagram_widgets/TransformerIndicator.dart';
+import 'package:azimuth_imitator/popup_page_widgets/popupPageBlock.dart';
+import 'package:azimuth_imitator/widgets/customButton.dart';
 import 'package:flutter/material.dart';
 import '../components/colorManager.dart';
+
 import '../widgets/diagramPainter.dart';
 
 class SchemePage extends StatefulWidget {
@@ -45,41 +50,40 @@ class _SchemePageState extends State<SchemePage> {
 
   final List<Map<String, dynamic>> _transformers = [
     {
-      'label': 'TV7',
-      'left': 670,
-      'top': 620,
-      'width': 60,
-      'height': 120,
-      'ringNumber': 2,
+     'label': 'TV7',
+     'left': 670,
+     'top': 620,
+     'width': 60,
+     'height': 120,
+     'ringNumber': 2,
     },
     {
-      'label': 'TV8',
-      'left': 1270,
-      'top': 620,
-      'width': 60,
-      'height': 120,
-      'ringNumber': 2,
+     'label': 'TV8',
+     'left': 1270,
+     'top': 620,
+     'width': 60,
+     'height': 120,
+     'ringNumber': 2,
     },
-      {
-       'label': 'TV2',
-       'left': 270,
-       'top': 620,
-       'width': 60,
-       'height': 120,
-       'ringNumber': 2,
-     },
-     {
-       'label': 'TV1',
-       'left': 1470,
-       'top': 620,
-       'width': 60,
-       'height': 120,
-       'ringNumber': 2,
-     },
-
+   {
+    'label': 'TV2',
+    'left': 270,
+    'top': 620,
+    'width': 60,
+    'height': 120,
+    'ringNumber': 2,
+    },
+    {
+    'label': 'TV1',
+    'left': 1470,
+    'top': 620,
+    'width': 60,
+    'height': 120,
+    'ringNumber': 2,
+    },
   ];
 
-  final List<Map<String, dynamic>> _rectIndicators = [
+  late final List<Map<String, dynamic>> _rectIndicators = [
     {
       'label': 'ТРАЛ',
       'left': 10,
@@ -93,13 +97,7 @@ class _SchemePageState extends State<SchemePage> {
       'top': 600,
       'width': 110,
       'height': 90,
-      'dialog': AlertDialog(
-        title: Text('ВРК ЛБ'),
-        content: SizedBox(
-          width: 600,
-          height: 400,
-        ),
-      ),
+      'dialog': _buildVrkDialog('ВРК ЛБ'),
     },
     {
       'label': 'ВРК ПБ',
@@ -107,13 +105,7 @@ class _SchemePageState extends State<SchemePage> {
       'top': 600,
       'width': 110,
       'height': 90,
-      'dialog': const AlertDialog(
-        title: Text('ВРК ПБ'),
-        content: SizedBox(
-          width: 600,
-          height: 400,
-        ),
-      ),
+      'dialog': _buildVrkDialog('ВРК ПБ'),
     },
     {
       'label': 'ТРАЛ',
@@ -123,6 +115,167 @@ class _SchemePageState extends State<SchemePage> {
       'height': 70,
     },
   ];
+
+  late final List<Map<String, dynamic>> _circleIndicators = [
+    {
+      'label': 'ГДГ 2',
+      'left': 350,
+      'top': 250,
+      'size': 90,
+      'dialog': null, 
+    },
+    {
+      'label': 'ГДГ 1',
+      'left': 1200,
+      'top': 250,
+      'size': 90,
+      'dialog': null,
+    },
+    {
+      'label': 'АСДГ',
+      'left': 1155,
+      'top': 1050,
+      'size': 90,
+      'dialog': null,
+    },
+  ];
+
+  Widget _buildVrkDialog(String title) {
+    return AlertDialog(
+      backgroundColor: ColorManager.primaryBackground,
+      title: Text(
+        title,
+        style: TextStyle(
+          color: ColorManager.text,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      content: SizedBox(
+        width: 950,
+        height: 750,
+        child: SingleChildScrollView(
+          child: Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              SizedBox(
+                width: 300,
+                child: PopupPageBlock(
+                  title: 'Вход',
+                  widgetStack: const [
+                    CustomProgressBar(minValue: 0, maxValue: 700, currentValue: 400, title: 'Напряжение', units: 'В'),
+                    SizedBox(height: 8),
+                    CustomProgressBar(minValue: 0, maxValue: 500, currentValue: 120, title: 'Ток', units: 'А'),
+                    SizedBox(height: 8),
+                    CustomProgressBar(minValue: 0, maxValue: 60, currentValue: 50, title: 'Частота', units: 'Гц'),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 300,
+                child: PopupPageBlock(
+                  title: 'ЗПТ',
+                  widgetStack: const [
+                    CustomProgressBar(minValue: 0, maxValue: 1000, currentValue: 540, title: 'Напряжение', units: 'В'),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 300,
+                child: PopupPageBlock(
+                  title: 'Выход',
+                  widgetStack: const [
+                    CustomProgressBar(minValue: 0, maxValue: 400, currentValue: 380, title: 'Напряжение', units: 'В'),
+                    SizedBox(height: 8),
+                    CustomProgressBar(minValue: 0, maxValue: 500, currentValue: 150, title: 'Ток', units: 'А'),
+                    SizedBox(height: 8),
+                    CustomProgressBar(minValue: 0, maxValue: 1000, currentValue: 500, title: 'Огр. мощности', units: 'кВт'),
+                    SizedBox(height: 8),
+                    CustomProgressBar(minValue: 0, maxValue: 1000, currentValue: 550, title: 'Полная мощность', units: 'кВА'),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 300,
+                child: PopupPageBlock(
+                  title: 'ГЭУ',
+                  widgetStack: const [
+                    CustomProgressBar(minValue: 0, maxValue: 5000, currentValue: 1200, title: 'Момент на валу', units: 'Н·м'),
+                    SizedBox(height: 8),
+                    CustomProgressBar(minValue: 0, maxValue: 3000, currentValue: 1500, title: 'Задан. скорость', units: 'об/мин'),
+                    SizedBox(height: 8),
+                    CustomProgressBar(minValue: 0, maxValue: 3000, currentValue: 1490, title: 'Факт. скорость', units: 'об/мин'),
+                    SizedBox(height: 8),
+                    CustomProgressBar(minValue: 0, maxValue: 1000, currentValue: 400, title: 'Задан. мощность', units: 'кВт'),
+                    SizedBox(height: 8),
+                    CustomProgressBar(minValue: 0, maxValue: 1000, currentValue: 395, title: 'Факт. мощность', units: 'кВт'),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 300,
+                child: PopupPageBlock(
+                  title: 'Температура ПЧ',
+                  widgetStack: const [
+                    CustomProgressBar(minValue: 0, maxValue: 100, currentValue: 45, title: 'ФАЗА U', units: '°C'),
+                    SizedBox(height: 8),
+                    CustomProgressBar(minValue: 0, maxValue: 100, currentValue: 47, title: 'ФАЗА V', units: '°C'),
+                    SizedBox(height: 8),
+                    CustomProgressBar(minValue: 0, maxValue: 100, currentValue: 46, title: 'ФАЗА W', units: '°C'),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 300,
+                child: PopupPageBlock(
+                  title: 'Температура ГЭД',
+                  widgetStack: [
+                    const CustomProgressBar(minValue: 0, maxValue: 150, currentValue: 65, title: 'ФАЗА U', units: '°C'),
+                    const SizedBox(height: 8),
+                    const CustomProgressBar(minValue: 0, maxValue: 150, currentValue: 68, title: 'ФАЗА V', units: '°C'),
+                    const SizedBox(height: 8),
+                    const CustomProgressBar(minValue: 0, maxValue: 150, currentValue: 66, title: 'ФАЗА W', units: '°C'),
+                    const SizedBox(height: 12),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Система охлаждения:',
+                            style: TextStyle(
+                              color: ColorManager.text,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            'Неисправность',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        CustomButton(
+          onPressed: () => Navigator.of(context).pop(),
+          label: 'Закрыть',
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +326,6 @@ class _SchemePageState extends State<SchemePage> {
                     ),
                   )),
 
-                  // scheme lines
                   Positioned.fill(
                     child: IgnorePointer(
                       child: CustomPaint(
@@ -183,9 +335,17 @@ class _SchemePageState extends State<SchemePage> {
                     ),
                   ),
 
-                  _buildGDG('ГДГ 2', 350 * s, 250 * s),
-                  _buildGDG('ГДГ 1', 1200 * s, 250 * s),
-                  _buildGDG('АСДГ ', 1155 * s, 1050 * s),
+                  ..._circleIndicators.map((item) => Positioned(
+                    top: (item['top'] as num).toDouble() * s,
+                    left: (item['left'] as num).toDouble() * s,
+                    child: CircleIndicator(
+                      size: (item['size'] as num).toDouble() * s,
+                      stateColor: ColorManager.primary,
+                      backgroundColor: ColorManager.primaryBackground,
+                      label: item['label'],
+                      dialog: item['dialog'],
+                    ),
+                  )),
 
                   ..._boxes.map((box) => Positioned(
                     top: (box[2] as num).toDouble() * s,
@@ -230,38 +390,6 @@ class _SchemePageState extends State<SchemePage> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildGDG(String number, double left, double top) {
-    final s = _scale;
-    return Positioned(
-      top: top,
-      left: left,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 90 * s,
-            height: 90 * s,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: ColorManager.primaryBackground,
-              border: Border.all(color: ColorManager.primary, width: 3.0 * s),
-            ),
-            child: Center(
-              child: Text(
-                number,
-                style: TextStyle(
-                  color: ColorManager.text,
-                  fontSize: 16 * s,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
