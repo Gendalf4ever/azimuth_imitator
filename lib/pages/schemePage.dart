@@ -1,5 +1,6 @@
 // ignore_for_file: file_names
 import 'package:azimuth_imitator/diagram_widgets/CircuitBreakerIndicator.dart';
+import 'package:azimuth_imitator/diagram_widgets/RectIndicator.dart';
 import 'package:azimuth_imitator/diagram_widgets/TransformerIndicator.dart';
 import 'package:flutter/material.dart';
 import '../components/colorManager.dart';
@@ -40,6 +41,87 @@ class _SchemePageState extends State<SchemePage> {
     ['Q2', 170, 1220, true],
     ['Q1', 1370, 1220, true],
     ['QG', 1170, 1160, true],
+  ];
+
+  final List<Map<String, dynamic>> _transformers = [
+    {
+      'label': 'TV7',
+      'left': 670,
+      'top': 620,
+      'width': 60,
+      'height': 120,
+      'ringNumber': 2,
+    },
+    {
+      'label': 'TV8',
+      'left': 1270,
+      'top': 620,
+      'width': 60,
+      'height': 120,
+      'ringNumber': 2,
+    },
+      {
+       'label': 'TV2',
+       'left': 270,
+       'top': 620,
+       'width': 60,
+       'height': 120,
+       'ringNumber': 2,
+     },
+     {
+       'label': 'TV1',
+       'left': 1470,
+       'top': 620,
+       'width': 60,
+       'height': 120,
+       'ringNumber': 2,
+     },
+
+  ];
+
+  final List<Map<String, dynamic>> _rectIndicators = [
+    {
+      'label': 'ТРАЛ',
+      'left': 10,
+      'top': 600,
+      'width': 90,
+      'height': 70,
+    },
+    {
+      'label': 'ВРК ЛБ',
+      'left': 450,
+      'top': 600,
+      'width': 110,
+      'height': 90,
+      'dialog': AlertDialog(
+        title: Text('ВРК ЛБ'),
+        content: SizedBox(
+          width: 600,
+          height: 400,
+        ),
+      ),
+    },
+    {
+      'label': 'ВРК ПБ',
+      'left': 1100,
+      'top': 600,
+      'width': 110,
+      'height': 90,
+      'dialog': const AlertDialog(
+        title: Text('ВРК ПБ'),
+        content: SizedBox(
+          width: 600,
+          height: 400,
+        ),
+      ),
+    },
+    {
+      'label': 'ТРАЛ',
+      'left': 1600,
+      'top': 600,
+      'width': 90,
+      'height': 70,
+    },
   ];
 
   @override
@@ -119,31 +201,31 @@ class _SchemePageState extends State<SchemePage> {
                     ),
                   )),
 
-                  Positioned(
-                    top: 620 * s,
-                    left: 670 * s,
+                  ..._transformers.map((tr) => Positioned(
+                    top: (tr['top'] as num).toDouble() * s,
+                    left: (tr['left'] as num).toDouble() * s,
                     child: TransformerIndicator(
-                      width: 60 * s,
-                      height: 120 * s,
-                      ringNumber: 2,
+                      width: (tr['width'] as num).toDouble() * s,
+                      height: (tr['height'] as num).toDouble() * s,
+                      ringNumber: tr['ringNumber'],
                       stateColor: ColorManager.primary,
-                      label: 'T7',
+                      label: tr['label'],
                       labelPosition: TransformerLabelPosition.below,
                     ),
-                  ),
-                  Positioned(
-                    top: 620 * s,
-                    left: 1270 * s,
-                    child: TransformerIndicator(
-                      width: 60 * s,
-                      height: 120 * s,
-                      ringNumber: 2,
+                  )),
+
+                  ..._rectIndicators.map((item) => Positioned(
+                    top: (item['top'] as num).toDouble() * s,
+                    left: (item['left'] as num).toDouble() * s,
+                    child: RectIndicator(
+                      width: (item['width'] as num).toDouble() * s,
+                      height: (item['height'] as num).toDouble() * s,
                       stateColor: ColorManager.primary,
-                      label: 'T8',
-                      labelPosition: TransformerLabelPosition.below,
+                      label: item['label'],
+                      dialog: item['dialog'], 
                     ),
-                  ),
-                ],
+                  )),
+                ],  
               ),
             ),
           ),
