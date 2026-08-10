@@ -92,7 +92,7 @@ class _AzimuthWidgetState extends State<AzimuthWidget> with SingleTickerProvider
                 children: [
                   SizedBox(
                     child: SvgPicture.asset(
-                      'imgs/propeller_v3_strelka.svg',
+                      'lib/imgs/propeller_v3_strelka.svg',
                       width: widget.size * 0.70,   
                       height: widget.size * 0.52,
                       fit: BoxFit.fill,
