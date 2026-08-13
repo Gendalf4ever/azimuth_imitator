@@ -6,6 +6,8 @@ import 'package:azimuth_imitator/components/colorManager.dart';
 import 'package:azimuth_imitator/components/mainTabBar.dart';
 import 'package:azimuth_imitator/components/mainAppBar.dart';
 
+import 'msgsPage.dart';
+
 class Mainscreen extends StatefulWidget {
   const Mainscreen({super.key});
 
@@ -22,7 +24,7 @@ class _MainscreenState extends State<Mainscreen> with SingleTickerProviderStateM
     (label: 'Главная', page: MainPage()),
     (label: 'АПС', page:  Apspage()),
     (label: 'Схема', page:  SchemePage()),
-    (label: 'Сообщения', page: Center(child: Text('Страница Сообщения', style: TextStyle(color: ColorManager.text))))
+    (label: 'Сообщения', page: MsgsPage())
   ];
 @override
   void initState() {

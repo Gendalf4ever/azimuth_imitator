@@ -11,7 +11,6 @@ import '../widgets/customDropdownMenu.dart';
 import '../widgets/customNumberPicker.dart';
 import '../widgets/customTable.dart';
 
-
 class MsgsPage extends StatefulWidget {
   const MsgsPage({super.key});
 
@@ -31,17 +30,21 @@ class _MsgsPageState extends State<MsgsPage>
     'Время по возрастанию',
     'Время по убыванию',
   ];
+
+
   final List<String> modeOptions = [
-    "Все",
-    "Аварии",
+    "Общие",
+    "Информация",
     "Предупреждения",
-    "Блокировки",
+    "Авария",
   ];
+
+
   final List<String> modeOptionsForQuery = [
-    "",
-    "AND mtype = 'Alarm'",
+    "", 
+    "AND mtype = 'Info'", 
     "AND mtype = 'Warning'",
-    "AND mtype = 'Blocking'",
+    "AND mtype = 'Alarm'", 
   ];
 
   List<DateTime?> rangeDatePickerWithValue = [
@@ -114,14 +117,13 @@ class _MsgsPageState extends State<MsgsPage>
     }).toList();
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: ColorManager.primaryBackground,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Панель управления виджетами
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -146,13 +148,9 @@ class _MsgsPageState extends State<MsgsPage>
                   },
                   label: 'Календарь',
                 ),
-
-                // 1. Сортировка времени переведена на CustomDropdown
                 CustomDropdown<int>(
                   width: 240,
                   height: 50,
-                  //color: ColorManager.primary,
-                  //backgroundColor: const Color(0xFF303F46),
                   value: timeSort ? 1 : 0,
                   items: List.generate(2, (index) {
                     return DropdownMenuItem<int>(
@@ -173,12 +171,9 @@ class _MsgsPageState extends State<MsgsPage>
                     });
                   },
                 ),
-
                 CustomDropdown<int>(
-                  width: 180,
+                  width: 200,
                   height: 50,
-                  //color: ColorManager.primary,
-                  //backgroundColor: ColorManager.primaryBackground,
                   value: typeSelected,
                   items: List.generate(modeOptions.length, (index) {
                     return DropdownMenuItem<int>(
@@ -228,15 +223,10 @@ class _MsgsPageState extends State<MsgsPage>
                   height: 50,
                   onPressed: () {
                     setState(() {
-                      fetchData;
+                      fetchData();
                     });
                   },
                 ),
-                /*IconButton(
-                  iconSize: 36,
-                  icon: Icon(Icons.refresh, color: ColorManager.text),
-                  onPressed: fetchData,
-                ),*/
               ],
             ),
             const SizedBox(height: 16),
